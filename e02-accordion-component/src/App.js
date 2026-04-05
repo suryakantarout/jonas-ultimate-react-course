@@ -25,28 +25,42 @@ export default function App() {
 }
 
 function Accordion({ data }) {
+  const [currOpen, setCurrOpen] = useState(null);
+
+  function handleToggle(num) {
+    num === currOpen ? setCurrOpen(null) : setCurrOpen(num);
+  }
+
   return (
     <div className="accordion">
       {data.map((item, index) => (
-        <AccordionItem num={index + 1} title={item.title} text={item.text} />
+        <AccordionItem
+          num={index + 1}
+          title={item.title}
+          text={item.text}
+          onToggle={handleToggle}
+          currOpen={currOpen}
+          key={index}
+        >
+          {currOpen === index + 1 && (
+            <div className="content-box">{item.text}</div>
+          )}
+        </AccordionItem>
       ))}
     </div>
   );
 }
 
-function AccordionItem({ num, title, text }) {
-  const [isExpanded, setIsExpanded] = useState(false);
-
-  function handleToggle() {
-    setIsExpanded((e) => !e);
-  }
-
+function AccordionItem({ num, title, text, currOpen, onToggle, children }) {
   return (
-    <div className={`item ${isExpanded ? "open" : ""}`} onClick={handleToggle}>
+    <div
+      className={`item ${currOpen === num ? "open" : ""}`}
+      onClick={() => onToggle(num)}
+    >
       <p className="number">{num <= 9 ? `0${num}` : num}</p>
       <p className="title">{title}</p>
-      <p className="icon">{isExpanded ? "-" : "+"}</p>
-      {isExpanded && <div className="content-box">{text}</div>}
+      <p className="icon">{currOpen === num ? "-" : "+"}</p>
+      {children}
     </div>
   );
 }
